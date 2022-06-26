@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>VoxKart/INTERSCR_479x688.png</file>
+    <file>VoxKart/TTKART_171x51.png</file>
+    <file>VoxKart/TTKBANNR_1_171x51.png</file>
+  </qresource>
+</RCC>
