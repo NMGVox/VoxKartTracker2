@@ -27,6 +27,7 @@ class MainWindow(QMainWindow):
     server_info = {}  # Use server names ask key to retrieve info about the server (players, ip, number playing)
     filepath = os.path.expanduser('~\\Documents\\VoxKartTracker')
     pref_servers = []
+    time_between_ref = 30000
 
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -323,7 +324,7 @@ class MainWindow(QMainWindow):
         self.menubar = QMenuBar(self)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setEnabled(True)
-        self.menubar.setGeometry(QRect(0, 0, 479, 21))
+        self.menubar.setGeometry(QRect(0, 0, 479, 210))
         self.menubar.setDefaultUp(False)
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
@@ -379,7 +380,17 @@ class MainWindow(QMainWindow):
         self.connectbutton.clicked.connect(self.connectToServer)
         self.prefToggle.stateChanged.connect(lambda: self.showPrefHelper(self.servertable, self.prefToggle.isChecked(), self.searchbar.text()))
         self.closeInfoButton.clicked.connect(self.closePlayerInfoTab)
+        self.comboBox.currentIndexChanged.connect(self.changeTime)
+        self.actionClose.triggered.connect(self.closeApp)
+
+        # timer = QTimer(self)
+        # timer.timeout.connect(self.getserverinfo)
+        # timer.start(self.time_between_refs)
         #  self.actionClose.triggered.connect(self.closeApp().on_triggered)
+
+    def changeTime(self):
+        selection = int(self.comboBox.currentText())
+        self.time_between_ref = selection * 1000
 
     def closePlayerInfoTab(self):
         self.serverinfotable.setRowCount(0)
@@ -402,7 +413,6 @@ class MainWindow(QMainWindow):
             return
 
     def manage_pref(self, name, inp, t, pref_state):
-        # print(name[0].text())
         tempName = name[0].text()
         if tempName not in self.pref_servers:
             self.pref_servers.append(tempName)
@@ -416,7 +426,6 @@ class MainWindow(QMainWindow):
             writer.writerow(self.pref_servers)
 
     def showPrefHelper(self, t, pref_state, inp):
-        print(inp)
         self.searchHelper(inp, t, pref_state)
 
     def showserverinfo(self, info, indx, prefbutton, connectbutton):
@@ -436,7 +445,6 @@ class MainWindow(QMainWindow):
 
     def searchHelper(self, inp, tab, pref_state):
         displayservs =[]
-
         if pref_state:
             #  Only go through list of preferred servers if the option is toggled
             for server in self.pref_servers:
@@ -500,6 +508,7 @@ class MainWindow(QMainWindow):
             names_t.setItem(x, 0, QTableWidgetItem(servername))
             names_t.setItem(x, 1, QTableWidgetItem(self.server_info[servername][0]))
             x += 1
+
     def closeApp(self):
         sys.exit()
 
