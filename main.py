@@ -8,6 +8,8 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
+
+
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -307,6 +309,9 @@ class MainWindow(QMainWindow):
         self.searchLabel.setFrameShape(QFrame.NoFrame)
         self.searchLabel.setFrameShadow(QFrame.Raised)
         self.setCentralWidget(self.centralwidget)
+
+        self.timer = QTimer(self)
+
         self.Background.raise_()
         self.SonicRoboBlast2Logo.raise_()
         self.prefToggle.raise_()
@@ -383,14 +388,14 @@ class MainWindow(QMainWindow):
         self.comboBox.currentIndexChanged.connect(self.changeTime)
         self.actionClose.triggered.connect(self.closeApp)
 
-        # timer = QTimer(self)
-        # timer.timeout.connect(self.getserverinfo)
-        # timer.start(self.time_between_refs)
+        self.timer.timeout.connect(lambda: self.getserverinfo(self.servertable))
+        self.timer.start(self.time_between_ref)
         #  self.actionClose.triggered.connect(self.closeApp().on_triggered)
 
     def changeTime(self):
         selection = int(self.comboBox.currentText())
         self.time_between_ref = selection * 1000
+        self.timer.start(self.time_between_ref)
 
     def closePlayerInfoTab(self):
         self.serverinfotable.setRowCount(0)
@@ -456,6 +461,7 @@ class MainWindow(QMainWindow):
                 if inp.lower() in server.lower():
                     displayservs.append(server)
         #  Populate server table with results
+        tab.setRowCount(0)
         tab.setRowCount(len(displayservs))
         incr = 0
         for serv in displayservs:
@@ -480,8 +486,10 @@ class MainWindow(QMainWindow):
         url = "https://ms.kartkrew.org/"
         page = requests.get(url)
         soupme = BeautifulSoup(page.content, "html.parser")
-
         results = soupme.find_all("td", class_="copyout")
+
+        #  Empty the GLOBAL server name list to prevent duplicates
+        self.results_sn = []
 
         # Use BeautifulSoup to extract information about all servers on the SRB2Kart Masterlist
         for result in results:
@@ -508,9 +516,13 @@ class MainWindow(QMainWindow):
             names_t.setItem(x, 0, QTableWidgetItem(servername))
             names_t.setItem(x, 1, QTableWidgetItem(self.server_info[servername][0]))
             x += 1
+        #  Check if preferences are toggled or if the user has inputte a search query
+        if self.prefToggle.isChecked() or self.searchbar.text():
+            self.searchHelper(self.searchbar.text(), self.servertable, self.prefToggle.isChecked())
 
     def closeApp(self):
         sys.exit()
+
 
 app = QApplication(sys.argv)
 app.setStyle('Breeze')
