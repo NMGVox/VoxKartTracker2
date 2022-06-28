@@ -141,15 +141,15 @@ class MainWindow(QMainWindow):
         #  End initialization of server table
 
         #Initialize the server info table
-        self.serverinfotable = QTableWidget(self.centralwidget)
-        if (self.serverinfotable.columnCount() < 1):
-            self.serverinfotable.setColumnCount(1)
+        self.player_table = QTableWidget(self.centralwidget)
+        if (self.player_table.columnCount() < 1):
+            self.player_table.setColumnCount(1)
         __qtablewidgetitem = QTableWidgetItem()
-        self.serverinfotable.setHorizontalHeaderItem(0, __qtablewidgetitem)
-        self.serverinfotable.setObjectName(u"serverinfotable")
-        self.serverinfotable.setGeometry(QRect(306, 158, 151, 381))
-        self.serverinfotable.setMinimumSize(QSize(151, 381))
-        self.serverinfotable.setMaximumSize(QSize(151, 381))
+        self.player_table.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        self.player_table.setObjectName(u"serverinfotable")
+        self.player_table.setGeometry(QRect(306, 158, 151, 381))
+        self.player_table.setMinimumSize(QSize(151, 381))
+        self.player_table.setMaximumSize(QSize(151, 381))
         palette2 = QPalette()
         palette2.setBrush(QPalette.Active, QPalette.WindowText, brush)
         palette2.setBrush(QPalette.Active, QPalette.Text, brush)
@@ -172,34 +172,34 @@ class MainWindow(QMainWindow):
         #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         palette2.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush6)
         #endif
-        self.serverinfotable.setPalette(palette2)
-        self.serverinfotable.setAutoFillBackground(False)
-        self.serverinfotable.setFrameShape(QFrame.NoFrame)
-        self.serverinfotable.setFrameShadow(QFrame.Plain)
-        self.serverinfotable.setLineWidth(1)
-        self.serverinfotable.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.serverinfotable.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.serverinfotable.setAutoScroll(True)
-        self.serverinfotable.setAutoScrollMargin(23)
-        self.serverinfotable.setDragDropMode(QAbstractItemView.NoDragDrop)
-        self.serverinfotable.setAlternatingRowColors(True)
-        self.serverinfotable.setSelectionMode(QAbstractItemView.NoSelection)
-        self.serverinfotable.setSelectionBehavior(QAbstractItemView.SelectItems)
-        self.serverinfotable.setTextElideMode(Qt.ElideRight)
-        self.serverinfotable.setShowGrid(True)
-        self.serverinfotable.setGridStyle(Qt.NoPen)
-        self.serverinfotable.setSortingEnabled(False)
-        self.serverinfotable.setWordWrap(True)
-        self.serverinfotable.setCornerButtonEnabled(True)
-        self.serverinfotable.horizontalHeader().setVisible(True)
-        self.serverinfotable.horizontalHeader().setCascadingSectionResizes(True)
-        self.serverinfotable.verticalHeader().setVisible(False)
-        self.serverinfotable.verticalHeader().setCascadingSectionResizes(False)
-        self.serverinfotable.verticalHeader().setHighlightSections(False)
-        self.serverinfotable.verticalHeader().setStretchLastSection(False)
-        self.serverinfotable.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.serverinfotable.setHorizontalHeaderLabels(["Player Name"])
-        self.serverinfotable.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
+        self.player_table.setPalette(palette2)
+        self.player_table.setAutoFillBackground(False)
+        self.player_table.setFrameShape(QFrame.NoFrame)
+        self.player_table.setFrameShadow(QFrame.Plain)
+        self.player_table.setLineWidth(1)
+        self.player_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.player_table.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.player_table.setAutoScroll(True)
+        self.player_table.setAutoScrollMargin(23)
+        self.player_table.setDragDropMode(QAbstractItemView.NoDragDrop)
+        self.player_table.setAlternatingRowColors(True)
+        self.player_table.setSelectionMode(QAbstractItemView.NoSelection)
+        self.player_table.setSelectionBehavior(QAbstractItemView.SelectItems)
+        self.player_table.setTextElideMode(Qt.ElideRight)
+        self.player_table.setShowGrid(True)
+        self.player_table.setGridStyle(Qt.NoPen)
+        self.player_table.setSortingEnabled(False)
+        self.player_table.setWordWrap(True)
+        self.player_table.setCornerButtonEnabled(True)
+        self.player_table.horizontalHeader().setVisible(True)
+        self.player_table.horizontalHeader().setCascadingSectionResizes(True)
+        self.player_table.verticalHeader().setVisible(False)
+        self.player_table.verticalHeader().setCascadingSectionResizes(False)
+        self.player_table.verticalHeader().setHighlightSections(False)
+        self.player_table.verticalHeader().setStretchLastSection(False)
+        self.player_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.player_table.setHorizontalHeaderLabels(["Player Name"])
+        self.player_table.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
         # End of serverinfotable. Should really rename this "playertable" or something later on.
 
         self.prefbutton = QPushButton(self.centralwidget)
@@ -259,7 +259,8 @@ class MainWindow(QMainWindow):
         self.closeInfoButton = QPushButton(self.centralwidget)
         self.closeInfoButton.setObjectName(u"closeInfoButton")
         self.closeInfoButton.setEnabled(False)
-        self.closeInfoButton.setGeometry(QRect(436, 158, 21, 23))
+        self.closeInfoButton.setVisible(False)
+        self.closeInfoButton.setGeometry(QRect(418, 159, 21, 21))
         self.closeInfoButton.setCursor(QCursor(Qt.PointingHandCursor))
 
         font2 = QFont()
@@ -310,13 +311,22 @@ class MainWindow(QMainWindow):
         self.searchLabel.setFrameShadow(QFrame.Raised)
         self.setCentralWidget(self.centralwidget)
 
+        #  Create a time that controls the refresh period
         self.timer = QTimer(self)
+
+        #  Scrollbar styling
+        self.setStyleSheet("""QScrollBar:vertical {
+                                        background-color: #727272;
+                              }
+                              QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical{
+                                        background-color:#171817;
+                              }""")
 
         self.Background.raise_()
         self.SonicRoboBlast2Logo.raise_()
         self.prefToggle.raise_()
         self.servertable.raise_()
-        self.serverinfotable.raise_()
+        self.player_table.raise_()
         self.prefbutton.raise_()
         self.srb2kartlogo.raise_()
         self.connectbutton.raise_()
@@ -352,10 +362,10 @@ class MainWindow(QMainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Vox's Kart Tracker", None))
         self.actionClose.setText(QCoreApplication.translate("MainWindow", u"Close", None))
         self.prefToggle.setText(QCoreApplication.translate("MainWindow", u"Show Preferred Servers Only", None))
-        ___qtablewidgetitem = self.serverinfotable.horizontalHeaderItem(0)
+        ___qtablewidgetitem = self.player_table.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Player Name", None));
         #if QT_CONFIG(tooltip)
-        self.serverinfotable.setToolTip("")
+        self.player_table.setToolTip("")
         #endif // QT_CONFIG(tooltip)
         self.prefbutton.setText(QCoreApplication.translate("MainWindow", u"Add/Remove From \n"
                                                                          "Preferred Servers", None))
@@ -376,10 +386,11 @@ class MainWindow(QMainWindow):
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi
 
+    #  Self-explanatory: Function handles user input.
     def interactionHandler(self):
         self.makeprefs()
         self.getserverinfo(self.servertable)
-        self.servertable.clicked.connect(lambda: self.showserverinfo(self.serverinfotable, self.servertable.selectedItems(), self.prefbutton, self.connectbutton))
+        self.servertable.clicked.connect(lambda: self.showserverinfo(self.player_table, self.servertable.selectedItems(), self.prefbutton, self.connectbutton))
         self.prefbutton.clicked.connect(lambda: self.manage_pref(self.servertable.selectedItems(), self.searchbar.text(), self.servertable, self.prefToggle.isChecked()))
         self.searchbar.textChanged.connect(lambda: self.searchHelper(self.searchbar.text(), self.servertable, self.prefToggle.isChecked()))
         self.connectbutton.clicked.connect(self.connectToServer)
@@ -390,17 +401,21 @@ class MainWindow(QMainWindow):
 
         self.timer.timeout.connect(lambda: self.getserverinfo(self.servertable))
         self.timer.start(self.time_between_ref)
-        #  self.actionClose.triggered.connect(self.closeApp().on_triggered)
 
     def changeTime(self):
         selection = int(self.comboBox.currentText())
+        #  Convert seconds to ms.
         self.time_between_ref = selection * 1000
+        #  Restart the timer.
         self.timer.start(self.time_between_ref)
 
     def closePlayerInfoTab(self):
-        self.serverinfotable.setRowCount(0)
+        #  "Delete" whatever is in the player_table widget.
+        self.player_table.setRowCount(0)
         self.servertable.clearSelection()
+        #  Disable/hide selection dependent actions.
         self.closeInfoButton.setEnabled(False)
+        self.closeInfoButton.setVisible(False)
         self.prefbutton.setEnabled(False)
         self.connectbutton.setEnabled(False)
         return
@@ -419,34 +434,47 @@ class MainWindow(QMainWindow):
 
     def manage_pref(self, name, inp, t, pref_state):
         tempName = name[0].text()
+        #  Add server to preferred server list.
         if tempName not in self.pref_servers:
             self.pref_servers.append(tempName)
+        #  Remove server from preferences if the server is already in the list.
         else:
             self.pref_servers.remove(tempName)
             #  Update the display
             self.searchHelper(inp, self.servertable, pref_state)
+        #  Save server to file.
         with open(self.filepath + '/prefserv.csv', 'w') as f:
             writer = csv.writer(f)
             # write the header
             writer.writerow(self.pref_servers)
 
     def showPrefHelper(self, t, pref_state, inp):
+        #  This function is useless/redundant. Might delete later.
         self.searchHelper(inp, t, pref_state)
 
     def showserverinfo(self, info, indx, prefbutton, connectbutton):
+        #  Enable buttons dependent on having a server selected.
         self.closeInfoButton.setEnabled(True)
+        self.closeInfoButton.setVisible(True)
         self.prefbutton.setEnabled(True)
         self.connectbutton.setEnabled(True)
         connectbutton.setEnabled(True)
         prefbutton.setEnabled(True)
-        x = 0
+        #  "Delete" whatever is currently in player_table.
         info.setRowCount(0)
         server = indx[0].text()
+        # If the amount ofe players in a server can't be found, do nothing and inform the user. Prevents crashing.
+        if server not in self.results_sn:
+            alert = QMessageBox()
+            alert.setText("Server cannot be reached.")
+            alert.exec_()
+            return
+        #  Show the players currently in the server in the player_table widget.
+        x = 0
         info.setRowCount(len(self.server_info[server][1]))
         for player in self.server_info[server][1]:
             info.setItem(x, 0, QTableWidgetItem(player.text))
             x += 1
-        info.setHidden(False)
 
     def searchHelper(self, inp, tab, pref_state):
         displayservs =[]
@@ -473,8 +501,10 @@ class MainWindow(QMainWindow):
             incr += 1
 
     def makeprefs(self):
+        #  If a VoKartTracker dir doesn't exist, make one.
         if not os.path.isdir(self.filepath):
             os.mkdir(self.filepath)
+        #  If a prefserv file exists, open it and populate the preference list.
         if os.path.isfile(self.filepath + '/prefserv.csv'):
             with open(self.filepath + '/prefserv.csv', newline='') as prefs:
                 readin = csv.reader(prefs)
